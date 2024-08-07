@@ -1,25 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import SearchBar from './SearchBar';
+import CountryCard from './CountryCard';
+import './App.css'; // Assuming you have a CSS file for styling
 
-function App() {
+const App = () => {
+  const [countries, setCountries] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    fetch('https://restcountries.com/v3.1/all')
+      .then(response => response.json())
+      .then(data => setCountries(data))
+      .catch(error => console.error('Error fetching countries:', error));
+  }, []);
+
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredCountries = countries.filter(country =>
+    country.name.common.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <SearchBar searchTerm={searchTerm} handleSearch={handleSearch} />
+      <CountryCard countries={filteredCountries} />
     </div>
   );
-}
+};
 
 export default App;
